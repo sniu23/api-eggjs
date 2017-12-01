@@ -16,15 +16,15 @@ module.exports = {
       success: true,
       data,
       message,
-    };
-  },
-
-  fail(message, data) {
-    this.body = {
-      success: false,
-      message: message || 'fail',
-      data,
     }
   }
+
+  // fail(message, data) {
+  //   this.body = {
+  //     success: false,
+  //     message: message || 'fail',
+  //     data,
+  //   }
+  // }
 
 };

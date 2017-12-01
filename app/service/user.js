@@ -22,7 +22,7 @@ class UserService extends Service {
   async findOne(no) {
     const db = this.app.mysql.get('system')
     const user = await db.get('user', {no})
-    if (!user) throw new Error(`无此用户名！（${no}）`)
+    // if (!user) throw new Error(`无此用户名！${no}`)
     return user
   }
 
@@ -38,6 +38,16 @@ class UserService extends Service {
         password: oldPwd,
       },
       columns: ['password', 'updatedAt']
+    })
+    return result
+  }
+  
+  async insert(no, name, password, mail, mobile, roleCode='guset', valid=true) {
+    const db = this.app.mysql.get('system')
+    const result = await db.insert('user', {
+      no, name, password, mail, mobile, roleCode, valid,
+      createdAt: db.literals.now,
+      updatedAt: db.literals.now,
     })
     return result
   }

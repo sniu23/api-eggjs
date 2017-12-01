@@ -1,47 +1,63 @@
 'use strict';
 
 const Service = require('egg').Service
-
-// findAll findAndCount findOne findById count max min sum
-// findOrBuild findOrCreate
-// build create bulkCreate update upsert destroy describe
-
 class RoleService extends Service {
-  async findAllCount(columns, where, order, limit=20, offset=0) {
+/*
+*query(sql, values)
+*queryOne(sql, values)
+*select(table, options)
+*get(table, where, options)
+*insert(table, row[s], options)
+*update(table, row, options)
+*delete(table, where)
+*count(table, where)
+*/
+  async select(where, columns, orders, limit=20, offset=0) {
     const db = this.app.mysql.get('system')
-    const roles = await db.select('role', {
-      columns,
-      where,
-      limit,
-      offset,
+    const rows = await db.select('role', {
+      where: where, columns: columns, orders: orders, limit: limit, offset: offset,      
+    })
+    const count = await db.count('role', where)
+    return { rows, count }
+  }
+
+  async get(where, columns, orders) {
+    const db = this.app.mysql.get('system')
+    const row = await db.get('role', where, {
+      columns: columns, orders: orders,
     })
     const total = await db.count('role', where)
-    return { roles, total}
+    return row
   }
 
-  async findOne(no) {
+  async insert(row, columns) {
     const db = this.app.mysql.get('system')
-    const user = await db.get('user', {no})
-    if (!user) throw new Error(`无此用户名！（${no}）`)
-    return user
-  }
-
-  async changePwd(no, oldPwd, newPwd) {
-    const db = this.app.mysql.get('system')
-    const result = await db.update('user', {
-      no: no,
-      password: newPwd,
-      updatedAt: db.literals.now,
-    }, {
-      where: {
-        no: no,
-        password: oldPwd,
-      },
-      columns: ['password', 'updatedAt']
-    })
+    if (Array.isArray(row)) {
+      row = row.map(function(item) {
+        return item = Object.assign(item, { createdAt: db.literals.now, updatedAt: db.literals.now })
+      })
+    } else {
+      Object.assign(row, { createdAt: db.literals.now, updatedAt: db.literals.now })
+    }
+    row.createdAt = db.literals.now
+    row.updatedAt = db.literals.now
+    const result = await db.insert('role', row, { columns: columns })
     return result
   }
 
-}
+  async update(row, where, columns) {
+    const db = this.app.mysql.get('system')
+    Object.assign(row, { updatedAt: db.literals.now })
+    const result = await db.update('role', row, { where: where, columns: columns })
+    return result
+  }
 
+  async delete(where) {
+    const db = this.app.mysql.get('system')
+    const result = await db.delete('role', where)
+    return result
+  }
+
+
+}
 module.exports = RoleService

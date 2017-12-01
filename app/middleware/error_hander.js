@@ -8,7 +8,7 @@ module.exports = (options, app) => {
       ctx.logger.error(err);
       ctx.body = {
         success: false,
-        message: err.message || 'catch exception',
+        message: err.message || 'catch exception, no detail.',
       };
     };
   };
