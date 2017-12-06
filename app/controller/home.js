@@ -11,16 +11,13 @@ class HomeController extends Controller {
     this.ctx.success('im fine')
   }
 
-  // async wrong() {
-  //   this.ctx.fail('test_fail')
-  // }
-
   async right() {
     this.ctx.success('test_success')
   }
 
-  async error() {
-    throw new Error('test_error')
+  async wrong() {
+    // throw new Error('test_error')
+    this.ctx.throw(400, 'test_wrong', { data: 'info' })
   }
 
 }

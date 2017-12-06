@@ -12,26 +12,26 @@ class RoleService extends Service {
 *delete(table, where)
 *count(table, where)
 */
-  async select(where, columns, orders, limit=20, offset=0) {
-    const db = this.app.mysql.get('system')
-    const rows = await db.select('role', {
+  async select(database, table, where, columns, orders, limit=20, offset=0) {
+    const db = this.app.mysql.get(database)
+    const rows = await db.select(table, {
       where: where, columns: columns, orders: orders, limit: limit, offset: offset,      
     })
-    const count = await db.count('role', where)
+    const count = await db.count(table, where)
     return { rows, count }
   }
 
-  async get(where, columns, orders) {
-    const db = this.app.mysql.get('system')
-    const row = await db.get('role', where, {
+  async get(database, table, where, columns, orders) {
+    const db = this.app.mysql.get(database)
+    const row = await db.get(table, where, {
       columns: columns, orders: orders,
     })
-    const total = await db.count('role', where)
+    const total = await db.count(table, where)
     return row
   }
 
-  async insert(row, columns) {
-    const db = this.app.mysql.get('system')
+  async insert(database, table, row, columns) {
+    const db = this.app.mysql.get(database)
     if (Array.isArray(row)) {
       row = row.map(function(item) {
         return item = Object.assign(item, { createdAt: db.literals.now, updatedAt: db.literals.now })
@@ -41,20 +41,20 @@ class RoleService extends Service {
     }
     row.createdAt = db.literals.now
     row.updatedAt = db.literals.now
-    const result = await db.insert('role', row, { columns: columns })
+    const result = await db.insert(table, row, { columns: columns })
     return result
   }
 
-  async update(row, where, columns) {
-    const db = this.app.mysql.get('system')
+  async update(database, table, row, where, columns) {
+    const db = this.app.mysql.get(database)
     Object.assign(row, { updatedAt: db.literals.now })
-    const result = await db.update('role', row, { where: where, columns: columns })
+    const result = await db.update(table, row, { where: where, columns: columns })
     return result
   }
 
-  async delete(where) {
-    const db = this.app.mysql.get('system')
-    const result = await db.delete('role', where)
+  async delete(database, table, where) {
+    const db = this.app.mysql.get(database)
+    const result = await db.delete(table, where)
     return result
   }
 
